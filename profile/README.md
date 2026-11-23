@@ -9,6 +9,7 @@ NuExt provides a lightweight, compile-time-assisted stack for building predictab
 - Deterministic synchronous and asynchronous command execution.
 - Explicit application, service, view, window, and document lifecycles.
 - Compile-time generation of observable properties, commands, validation, and structured localization.
+- Platform-agnostic desktop base layer: models, change tracking, and settings shared by WPF, Avalonia, WinUI, and MAUI.
 - Practical WPF infrastructure without convention-heavy or reflection-driven runtime machinery.
 - Modular packages that can be adopted independently.
 - Broad compatibility with modern .NET, .NET Standard, and .NET Framework where applicable.
@@ -17,13 +18,16 @@ NuExt favors generated or explicit code over runtime discovery, hidden subscript
 
 ## Start here
 
-For WPF and desktop MVVM applications, start with:
+For desktop MVVM applications, start with:
 
 - [`NuExt.Minimal.Mvvm`](https://github.com/nu-ext/NuExt.Minimal.Mvvm) for the framework-neutral MVVM core.
 - [`NuExt.Minimal.Mvvm.SourceGenerator`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.SourceGenerator) for compile-time properties, commands, validation, and structured localization.
+- [`NuExt.Minimal.Mvvm.Desktop`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Desktop) for the platform-agnostic desktop base layer: model lifecycle, change tracking, and settings.
 - [`NuExt.Minimal.Mvvm.Wpf`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Wpf) for WPF application infrastructure.
 
-Additional packages provide reusable WPF behaviors, presentation utilities, MahApps.Metro integration, foundational .NET utilities, and lightweight data-access infrastructure.
+When settings must survive restarts, add [`NuExt.Minimal.Mvvm.Desktop.Persistence`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Desktop.Persistence).
+
+Additional packages provide reusable WPF behaviors, presentation utilities, AvalonDock and MahApps.Metro integrations, foundational .NET utilities, and lightweight data-access infrastructure.
 
 ## Ecosystem
 
@@ -35,14 +39,22 @@ NuExt.System
    └─ NuExt.System.Data.SQLite
 
 
-NuExt.System ─────────────────────┐
-NuExt.Minimal.Mvvm ───────────────┤
+NuExt.Minimal.Mvvm ───────────────┐
+NuExt.System ─────────────────────┴─ NuExt.Minimal.Mvvm.Desktop
+                                              │
+NuExt.System.Data.SQLite ─────────────────────┴─ NuExt.Minimal.Mvvm.Desktop.Persistence
+
+
+NuExt.Minimal.Mvvm.Desktop ───────┐
 NuExt.Minimal.Behaviors.Wpf ──────┼─ NuExt.Minimal.Mvvm.Wpf
 NuExt.Presentation.Wpf ───────────┘              │
+                                                 ├─ NuExt.Minimal.Mvvm.AvalonDock
                                                  └─ NuExt.Minimal.Mvvm.MahApps.Metro
 ```
 
-`NuExt.Minimal.Mvvm.SourceGenerator` is an independent compile-time package with no NuExt package dependencies.
+`NuExt.Minimal.Mvvm.SourceGenerator` is an independent compile-time package with no NuExt package dependencies; the MVVM modules consume it as an analyzer only.
+
+The WPF integrations additionally pull their third-party UI package: `MahApps.Metro` and `Dirkster.AvalonDock` respectively.
 
 ## Projects
 
@@ -54,7 +66,10 @@ NuExt.Presentation.Wpf ───────────┘              │
 
 - [`NuExt.Minimal.Mvvm`](https://github.com/nu-ext/NuExt.Minimal.Mvvm) — framework-neutral MVVM core with deterministic commands, asynchronous lifecycle management, validation infrastructure, and hierarchical service resolution.
 - [`NuExt.Minimal.Mvvm.SourceGenerator`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.SourceGenerator) — compile-time generation of observable properties, commands, validation infrastructure, and structured JSON localization.
+- [`NuExt.Minimal.Mvvm.Desktop`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Desktop) — platform-agnostic desktop base layer: deterministic model lifecycle, change tracking, and settings infrastructure shared by WPF, Avalonia, WinUI, and MAUI.
+- [`NuExt.Minimal.Mvvm.Desktop.Persistence`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Desktop.Persistence) — SQLite persistence for the desktop layer: key/value settings DAL, application version storage, settings migration, and a database initializer, without a UI framework reference.
 - [`NuExt.Minimal.Mvvm.Wpf`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.Wpf) — WPF infrastructure for views, dialogs, documents, windows, dispatchers, application services, and deterministic cleanup.
+- [`NuExt.Minimal.Mvvm.AvalonDock`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.AvalonDock) — AvalonDock integration for dockable documents, tool windows, and docking management services.
 - [`NuExt.Minimal.Mvvm.MahApps.Metro`](https://github.com/nu-ext/NuExt.Minimal.Mvvm.MahApps.Metro) — MahApps.Metro integration for dialogs and tabbed documents.
 
 ### WPF infrastructure
